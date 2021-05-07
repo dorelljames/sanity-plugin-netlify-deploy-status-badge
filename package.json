@@ -1,0 +1,51 @@
+{
+  "name": "@dorelljames/sanity-plugin-netlify-deploy-status-badge",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "sanipack build",
+    "watch": "sanipack build --watch",
+    "prepublishOnly": "sanipack build && sanipack verify"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/webriq/landing-page-builder.git"
+  },
+  "keywords": [
+    "sanity",
+    "sanity-plugin"
+  ],
+  "author": "Dorell James <galangdj@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "prop-types": "15.7.2"
+  },
+  "devDependencies": {
+    "sanipack": "2.0.1",
+    "prettier": "2.2.1",
+    "eslint": "7.25.0",
+    "eslint-config-prettier": "8.3.0",
+    "eslint-config-sanity": "5.1.0",
+    "eslint-plugin-react": "7.23.2"
+  },
+  "peerDependencies": {
+    "react": "^17.0.0"
+  },
+  "bugs": {
+    "url": "https://github.com/webriq/landing-page-builder/issues"
+  },
+  "homepage": "https://github.com/webriq/landing-page-builder#readme",
+  "prettier": {
+    "semi": true
+  },
+  "eslintConfig": {
+    "parser": "sanipack/babel/eslint-parser",
+    "extends": [
+      "sanity",
+      "sanity/react",
+      "prettier"
+    ],
+    "root": true
+  }
+}

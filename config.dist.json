@@ -1,0 +1,4 @@
+{
+  "apiId": "<YOUR-NETLIFY-API-OR-SITE-ID-HERE>",
+  "oauthClientId": "<YOUR-NETLIFY-OAUTH-APP-CLIENT_ID>"
+}

@@ -109,7 +109,10 @@ export default function DeployContainer(props) {
   }
 
   function handleLogout() {
-    return logout().then(() => setDeploys([]));
+    return logout().then(() => {
+      setDeploys([]);
+      setState("idle");
+    });
   }
 
   return (
@@ -156,22 +159,24 @@ export default function DeployContainer(props) {
             {isLoggedIn && (
               <Flex>
                 <Inline space={2}>
-                  <MenuButton
-                    button={<Button text="Trigger Deploy" />}
-                    id="menu-button-example"
-                    menu={
-                      <Menu>
-                        <MenuItem
-                          text="Deploy site"
-                          onClick={() => handleTriggerBuild()}
-                        />
-                        <MenuItem
-                          text="Clear cache and deploy site"
-                          onClick={() => handleTriggerBuild(true)}
-                        />
-                      </Menu>
-                    }
-                  />
+                  {state === "ready" && (
+                    <MenuButton
+                      button={<Button text="Trigger Deploy" />}
+                      id="menu-button-example"
+                      menu={
+                        <Menu>
+                          <MenuItem
+                            text="Deploy site"
+                            onClick={() => handleTriggerBuild()}
+                          />
+                          <MenuItem
+                            text="Clear cache and deploy site"
+                            onClick={() => handleTriggerBuild(true)}
+                          />
+                        </Menu>
+                      }
+                    />
+                  )}
                   <Button text="Logout" onClick={handleLogout} />
                 </Inline>
               </Flex>
@@ -184,18 +189,20 @@ export default function DeployContainer(props) {
         <Stack as={"ul"}>
           {state === "error" && (
             <Card padding={4} radius={2} tone="critical">
-              <Stack space={3}>
-                <Heading>Oh nooo!</Heading>
+              <Stack space={4}>
+                <Heading>Oh nooo! Something went wrong here...</Heading>
                 <Text>
-                  Something went wrong. Please refresh and if error persists,
-                  please contact plugin author{" "}
+                  Please make sure you have access to the site configured. Try
+                  refreshing this page. If error still persists, please contact
+                  plugin author
                   <a
                     href="mailto:netlify-deploy-status-badge+galangdj@gmail.com"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     @dorelljames
-                  </a>
+                  </a>{" "}
+                  or your developer.
                 </Text>
               </Stack>
             </Card>

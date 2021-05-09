@@ -1,7 +1,6 @@
 /* eslint-disable react/jsx-no-bind */
 import React from "react";
 import PropTypes from "prop-types";
-import { formatDistanceToNow } from "date-fns";
 import {
   Container,
   Heading,
@@ -22,7 +21,13 @@ import {
 } from "@sanity/ui";
 import { useNetlifyAuth } from "../hooks";
 import { siteId, oauthClientId } from "../config";
-import { prettyTime, getSiteDeploys, getSite, triggerNewBuild } from "../utils";
+import {
+  formatDeployTime,
+  getSiteDeploys,
+  getSite,
+  triggerNewBuild,
+  formatDate,
+} from "../utils";
 import { ArrowRightIcon } from "@sanity/icons";
 import { NetlifyIcon } from "../assets/netlify-rectacle.svg";
 
@@ -54,10 +59,6 @@ export default function DeployContainer(props) {
           .then(setSite);
       })
       .catch(() => {
-        toast.push({
-          title: "We need to login to display deploy logs!",
-          status: "warning",
-        });
         setIsSitePrivate(true);
       });
   }, [siteId]);
@@ -131,12 +132,12 @@ export default function DeployContainer(props) {
       <Box margin={2} padding={4} radius={2}>
         <Flex justify="space-between" align="center">
           <Stack space={4}>
-            <Heading size={3} as={"h2"}>
+            <Heading size={3} as="h2">
               <Flex marginRight={5} align="center">
                 <span style={{ marginRight: 10 }}>Site Deploys</span>
               </Flex>
             </Heading>
-            <Text muted>Displaying your recent site deploys here.</Text>
+            <Text muted>Displaying your recent site deploys.</Text>
           </Stack>
           <Stack space={3}>
             {needsSetup && (
@@ -197,7 +198,7 @@ export default function DeployContainer(props) {
       </Box>
 
       <Card margin={4}>
-        <Stack as={"ul"}>
+        <Stack as="ul">
           {state === "error" && (
             <Card padding={4} radius={2} tone="critical">
               <Stack space={4}>
@@ -220,26 +221,22 @@ export default function DeployContainer(props) {
           )}
 
           {state === "loading" && (
-            <Card borderBottom as={"li"} padding={4} radius={2}>
+            <Card borderBottom as="li" padding={4} radius={2}>
               <Text as="em">Getting things ready...</Text>
             </Card>
           )}
 
           {deploys?.map((deploy) => (
-            <Card
-              borderBottom
-              as={"li"}
-              padding={4}
-              radius={2}
-              key={deploy?.id}
-            >
-              <Grid columns={5} justify={"space-between"} align={"center"}>
+            <Card borderBottom as="li" padding={4} radius={2} key={deploy?.id}>
+              <Grid columns={6} justify="space-between" align="center">
                 <Box column={4}>
                   <Stack space={3}>
                     <Flex align="center">
                       <Text weight="semibold">
                         <a
                           href={deploy?.deploy_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
                           style={{ textTransform: `capitalize` }}
                         >
                           {deploy?.context.replace("-", " ")}
@@ -248,7 +245,11 @@ export default function DeployContainer(props) {
                       <Text weight="semibold">
                         {" "}
                         :{deploy?.branch}@
-                        <a href={deploy?.commit_url || ""}>
+                        <a
+                          href={deploy?.commit_url || ""}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
                           {deploy?.commit_ref?.substring(0, 7) || "HEAD"}{" "}
                         </a>
                       </Text>
@@ -281,13 +282,18 @@ export default function DeployContainer(props) {
                     <Text muted>{deploy?.title || "No deploy message"}</Text>
                   </Stack>
                 </Box>
-                <Flex justify={"flex-end"} align={"center"}>
+                <Flex
+                  column={2}
+                  justify="flex-end"
+                  align="center"
+                  style={{ textAlign: "right" }}
+                >
                   <Stack space={3}>
                     <Text weight="semibold">
-                      {formatDistanceToNow(new Date(deploy?.created_at))}
+                      {formatDate(new Date(deploy?.created_at))}
                     </Text>
                     <Text muted size={1}>
-                      Deployed in {prettyTime(deploy?.deploy_time)}
+                      {formatDeployTime(deploy?.deploy_time)}
                     </Text>
                   </Stack>
                   <Box marginLeft={2}>

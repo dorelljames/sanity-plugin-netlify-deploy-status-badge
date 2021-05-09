@@ -22,7 +22,8 @@
     "date-fns": "^2.21.3",
     "prop-types": "15.7.2",
     "@sanity/icons": "^1.0.6",
-    "@sanity/ui": "^0.33.19"
+    "@sanity/ui": "^0.33.19",
+    "styled-components": "^5.2.3"
   },
   "devDependencies": {
     "eslint": "7.25.0",

@@ -22,7 +22,7 @@ import { useNetlifyAuth } from "../hooks";
 import { siteId, oauthClientId } from "../config";
 import { getSiteDeploys, getSite, postSiteNewBuild } from "../utils";
 
-export const APP_REFRESH_INTERVAL = 30000;
+export const APP_REFRESH_INTERVAL = 10000;
 
 export default function App(props) {
   const toast = useToast();
@@ -44,6 +44,7 @@ export default function App(props) {
 
   // Check if we need auth, if not, good :)
   React.useEffect(() => {
+    setState("loading");
     getSiteDeploys(siteId)
       .then((res) => {
         if (!res.ok && res.status === 401) throw new Error(res.statusText);
@@ -59,14 +60,12 @@ export default function App(props) {
       })
       .catch(() => {
         setIsSitePrivate(true);
-        setState("idle");
       });
   }, [siteId]);
 
   // We need auth here
   React.useEffect(() => {
     if (isSitePrivate && siteId && authResponse) {
-      setState("loading");
       initOrRefreshApp();
     }
   }, [isSitePrivate, siteId, authResponse]);

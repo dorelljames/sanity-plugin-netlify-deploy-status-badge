@@ -40,8 +40,8 @@ export default function DeployContainer(props) {
   const [isSitePrivate, setIsSitePrivate] = React.useState(false);
   const [state, setState] = React.useState("idle"); // loading > error, ready
 
-  const needsSetup = isSitePrivate && !oauthClientId;
-  const needsAuth = isSitePrivate && oauthClientId && !authResponse;
+  const needsSetup = !oauthClientId;
+  const needsAuth = oauthClientId && !authResponse;
   const isLoggedIn = authResponse;
 
   // Check if we need auth, if not, good :)
@@ -53,6 +53,7 @@ export default function DeployContainer(props) {
       })
       .then((res) => res.json())
       .then(setDeploys)
+      .then(() => setTimeout(() => setState("ready"), 1000))
       .then(() => {
         getSite(siteId)
           .then((res) => res.json())
@@ -122,7 +123,9 @@ export default function DeployContainer(props) {
 
   function handleLogout() {
     return logout().then(() => {
-      setDeploys([]);
+      if (isSitePrivate) {
+        setDeploys([]);
+      }
       setState("idle");
     });
   }
@@ -150,7 +153,9 @@ export default function DeployContainer(props) {
                   rel="noopener noreferrer"
                 />
                 <Text muted size={1}>
-                  You need to setup Netlify's OAuth to login.
+                  {isSitePrivate
+                    ? "Setup Netlify's OAuth and login to view site deploys, etc."
+                    : "Setup OAuth to trigger a new build."}
                 </Text>
               </>
             )}
@@ -163,8 +168,9 @@ export default function DeployContainer(props) {
                   icon={NetlifyIcon}
                 />
                 <Text muted size={1}>
-                  Login in order to view your site's deploy and trigger a new
-                  build.
+                  {isSitePrivate
+                    ? "Login in order to view site's deploy log and trigger a new build"
+                    : "Login in order to trigger a new build"}
                 </Text>
               </>
             )}

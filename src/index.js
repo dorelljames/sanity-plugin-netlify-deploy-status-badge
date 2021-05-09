@@ -1,9 +1,9 @@
 import Icon from "./components/Icon";
-import DeployContainer from "./components/DeployContainer";
+import App from "./components/App";
 
 export default {
   title: "",
   name: "netlify-deploy-status-badge",
   icon: Icon,
-  component: DeployContainer,
+  component: App,
 };

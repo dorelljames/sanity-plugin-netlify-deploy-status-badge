@@ -1,7 +1,3 @@
 {
-  "apiId": "<YOUR-NETLIFY-API-OR-SITE-ID-HERE>",
-  "auth": {
-    "oauthClientId": "<YOUR-NETLIFY-OAUTH-APP-CLIENT_ID>",
-    "personalToken": "<YOUR-NETLIFY-PERSONAL-TOKEN>"
-  }
+  "apiId": "<YOUR-NETLIFY-API-OR-SITE-ID-HERE>"
 }

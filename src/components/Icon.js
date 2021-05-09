@@ -1,5 +1,6 @@
 import React from "react";
 import { siteId } from "../config";
+import { getSiteBadge } from "../utils";
 
 export const BADGE_REFRESH_INTERVAL = 10000;
 
@@ -7,23 +8,17 @@ export default function Icon(props) {
   const [icon, setIcon] = React.useState(null);
 
   React.useEffect(() => {
-    retrieveSiteBadge(siteId).then(setIcon);
+    getSiteBadge(siteId).then(setIcon);
   }, [siteId]);
 
+  // Refresh icon on every interval
   React.useEffect(() => {
     const interval = setInterval(() => {
-      retrieveSiteBadge(siteId).then(setIcon);
+      getSiteBadge(siteId).then(setIcon);
     }, BADGE_REFRESH_INTERVAL);
     return () => clearInterval(interval);
   }, []);
 
+  // eslint-disable-next-line react/no-danger
   return <div dangerouslySetInnerHTML={{ __html: icon }} />;
 }
-
-const retrieveSiteBadge = (siteId) => {
-  const time = new Date().getTime();
-
-  return fetch(
-    `https://api.netlify.com/api/v1/badges/${siteId}/deploy-status?${time}`
-  ).then((res) => res.text());
-};

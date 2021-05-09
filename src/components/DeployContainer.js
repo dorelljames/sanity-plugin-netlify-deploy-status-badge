@@ -1,4 +1,7 @@
+/* eslint-disable react/jsx-no-bind */
 import React from "react";
+import PropTypes from "prop-types";
+import { formatDistanceToNow } from "date-fns";
 import {
   Container,
   Heading,
@@ -14,25 +17,21 @@ import {
   Inline,
   Menu,
   MenuItem,
-  MenuDivider,
   MenuButton,
+  useToast,
 } from "@sanity/ui";
-import { useNetlifyAuth, useLocalStorage } from "../hooks";
-import { siteId, clientId, oauthClientId } from "../config";
-import {
-  prettyTime,
-  getSiteDeploys,
-  getSite,
-  triggerNewBuild,
-} from "../helper";
+import { useNetlifyAuth } from "../hooks";
+import { siteId, oauthClientId } from "../config";
+import { prettyTime, getSiteDeploys, getSite, triggerNewBuild } from "../utils";
 import { ArrowRightIcon } from "@sanity/icons";
 import { NetlifyIcon } from "../assets/netlify-rectacle.svg";
 
 export default function DeployContainer(props) {
-  const { getAuthURL, authResponse, getHeaders, logout } = useNetlifyAuth();
+  const toast = useToast();
+  const { getAuthURL, authResponse, logout } = useNetlifyAuth();
 
   const [site, setSite] = React.useState(null);
-  const [deploys, setDeploys] = React.useState([]); //
+  const [deploys, setDeploys] = React.useState([]);
   const [isSitePrivate, setIsSitePrivate] = React.useState(false);
   const [state, setState] = React.useState("idle"); // loading > error, ready
 
@@ -50,11 +49,17 @@ export default function DeployContainer(props) {
       .then((res) => res.json())
       .then(setDeploys)
       .then(() => {
-        getSite(siteId, options)
+        getSite(siteId)
           .then((res) => res.json())
           .then(setSite);
       })
-      .catch((err) => setIsSitePrivate(true));
+      .catch(() => {
+        toast.push({
+          title: "We need to login to display deploy logs!",
+          status: "warning",
+        });
+        setIsSitePrivate(true);
+      });
   }, [siteId]);
 
   // We need auth here
@@ -72,7 +77,7 @@ export default function DeployContainer(props) {
         .then((res) => res.json())
         .then(setDeploys)
         .then(() => setTimeout(() => setState("ready"), 1000))
-        .catch((err) => setState("error"));
+        .catch(() => setState("error"));
       getSite(siteId, options)
         .then((res) => res.json())
         .then(setSite);
@@ -88,6 +93,12 @@ export default function DeployContainer(props) {
       clearCache,
       headers: options.headers,
     }).then(() => {
+      toast.push({
+        title: `Successfully triggered new build ${
+          clearCache ? "without cache" : ""
+        }!`,
+        status: "success",
+      });
       setState("loading");
       getSiteDeploys(siteId, options)
         .then((res) => {
@@ -97,7 +108,7 @@ export default function DeployContainer(props) {
         .then((res) => res.json())
         .then(setDeploys)
         .then(() => setTimeout(() => setState("ready"), 1000))
-        .catch((err) => setState("error"));
+        .catch(() => setState("error"));
       getSite(siteId, options)
         .then((res) => res.json())
         .then(setSite);
@@ -241,8 +252,18 @@ export default function DeployContainer(props) {
                           {deploy?.commit_ref?.substring(0, 7) || "HEAD"}{" "}
                         </a>
                       </Text>
+                      {deploy.state === "new" && !deploy?.deploy_time && (
+                        <Badge
+                          mode="outline"
+                          tone="caution"
+                          padding={1}
+                          marginLeft="1"
+                        >
+                          New
+                        </Badge>
+                      )}
                       {deploy.state === "building" && (
-                        <Badge padding={1} marginLeft="1" mode="caution">
+                        <Badge padding={1} marginLeft="1" tone="caution">
                           Building
                         </Badge>
                       )}
@@ -251,7 +272,7 @@ export default function DeployContainer(props) {
                           Published
                         </Badge>
                       )}
-                      {deploy.state !== "building" && !deploy?.deploy_time && (
+                      {deploy.state === "error" && !deploy?.deploy_time && (
                         <Badge model="outline" padding={1} marginLeft="1">
                           Cancelled
                         </Badge>
@@ -263,7 +284,7 @@ export default function DeployContainer(props) {
                 <Flex justify={"flex-end"} align={"center"}>
                   <Stack space={3}>
                     <Text weight="semibold">
-                      {new Date(deploy?.created_at)?.toDateString()}
+                      {formatDistanceToNow(new Date(deploy?.created_at))}
                     </Text>
                     <Text muted size={1}>
                       Deployed in {prettyTime(deploy?.deploy_time)}
@@ -292,7 +313,7 @@ export default function DeployContainer(props) {
   );
 }
 
-const Tooltip = ({ text, children }) => {
+function Tooltip({ text, children }) {
   return (
     <STooltip
       content={
@@ -308,4 +329,8 @@ const Tooltip = ({ text, children }) => {
       {children}
     </STooltip>
   );
+}
+Tooltip.propTypes = {
+  text: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
 };

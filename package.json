@@ -20,7 +20,9 @@
   "license": "MIT",
   "dependencies": {
     "date-fns": "^2.21.3",
-    "prop-types": "15.7.2"
+    "prop-types": "15.7.2",
+    "@sanity/icons": "^1.0.6",
+    "@sanity/ui": "^0.33.19"
   },
   "devDependencies": {
     "eslint": "7.25.0",
@@ -31,8 +33,6 @@
     "sanipack": "2.0.1"
   },
   "peerDependencies": {
-    "@sanity/icons": "^1.0.6",
-    "@sanity/ui": "^0.33.19",
     "react": "^17.0.0"
   },
   "bugs": {

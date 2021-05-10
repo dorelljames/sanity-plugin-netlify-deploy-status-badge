@@ -24,6 +24,15 @@ import { getSiteDeploys, getSite, postSiteNewBuild } from "../utils";
 
 export const APP_REFRESH_INTERVAL = 10000;
 
+const STATE = {
+  LOADING: "loading",
+  READY: "ready",
+  ERROR: "error",
+  NEEDS_AUTH: "needs_auth",
+  AUTHENTICATING: "authenticating",
+  NOT_FOUND: "site_not_found",
+};
+
 export default function App(props) {
   const toast = useToast();
   const { getAuthURL, authResponse, logout } = useNetlifyAuth();
@@ -31,12 +40,12 @@ export default function App(props) {
   const [site, setSite] = React.useState(null);
   const [deploys, setDeploys] = React.useState([]);
   const [isSitePrivate, setIsSitePrivate] = React.useState(false);
-  const [state, setState] = React.useState("idle"); // loading > error, ready
+  const [state, setState] = React.useState("idle"); // (loading > ready | error), (loading > needs_auth > authenticating > error | ready)
 
   const needsSetup = !oauthClientId;
-  const needsAuth = oauthClientId && !authResponse;
   const isLoggedIn = authResponse;
-  const requestOptions = authResponse
+  const needsAuth = !needsSetup && !isLoggedIn;
+  const requestOptions = isLoggedIn
     ? {
         headers: { Authorization: `Bearer ${authResponse.access_token}` },
       }
@@ -44,7 +53,7 @@ export default function App(props) {
 
   // Check if we need auth, if not, good :)
   React.useEffect(() => {
-    setState("loading");
+    setState(STATE.LOADING);
     getSiteDeploys(siteId)
       .then((res) => {
         if (!res.ok && res.status === 401) throw new Error(res.statusText);
@@ -52,34 +61,38 @@ export default function App(props) {
       })
       .then((res) => res.json())
       .then(setDeploys)
-      .then(() => setTimeout(() => setState("ready"), 1000))
+      .then(() => setTimeout(() => setState(STATE.READY), 1000))
       .then(() => {
         getSite(siteId)
           .then((res) => res.json())
           .then(setSite);
       })
       .catch(() => {
+        setState(STATE.NEEDS_AUTH);
         setIsSitePrivate(true);
       });
   }, [siteId]);
 
   // We need auth here
   React.useEffect(() => {
-    if (isSitePrivate && siteId && authResponse) {
+    if (state === STATE.NEEDS_AUTH && isSitePrivate && siteId && isLoggedIn) {
       initOrRefreshApp();
     }
-  }, [isSitePrivate, siteId, authResponse]);
+  }, [isSitePrivate, siteId, isLoggedIn]);
 
   // Refresh App on every interval
   React.useEffect(() => {
-    const interval = setInterval(() => {
-      toast.push({
-        title: `Refreshing site deploys...`,
-        status: "info",
-      });
-      initOrRefreshApp();
-    }, APP_REFRESH_INTERVAL);
-    return () => clearInterval(interval);
+    if (state === STATE.READY) {
+      const interval = setInterval(() => {
+        toast.push({
+          title: `Refreshing site deploys...`,
+          status: "info",
+        });
+        initOrRefreshApp();
+      }, APP_REFRESH_INTERVAL);
+      return () => clearInterval(interval);
+    }
+    return null;
   }, []);
 
   function initOrRefreshApp() {
@@ -93,8 +106,12 @@ export default function App(props) {
       })
       .then((res) => res.json())
       .then(setDeploys)
-      .then(() => setTimeout(() => setState("ready"), 1000))
-      .catch(() => setState("error"));
+      .then(() => setTimeout(() => setState(STATE.READY), 1000))
+      .catch(() => {
+        if (isSitePrivate) {
+          setState(STATE.ERROR);
+        }
+      });
   }
 
   function handleTriggerBuild(clearCache = false) {
@@ -133,7 +150,7 @@ export default function App(props) {
       if (isSitePrivate) {
         setDeploys([]);
       }
-      setState("idle");
+      setState(STATE.IDLE);
     });
   }
 

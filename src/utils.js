@@ -30,7 +30,7 @@ export const getSiteBadge = (siteId) => {
 
   return fetch(
     `https://api.netlify.com/api/v1/badges/${siteId}/deploy-status?${time}`
-  ).then((res) => res.text());
+  );
 };
 
 export const getSiteDeploys = (siteId, options = null) =>

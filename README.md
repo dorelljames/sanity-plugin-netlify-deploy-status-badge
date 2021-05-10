@@ -50,7 +50,8 @@ To configure OAuth2, go to your [User Settings > Applications > OAuth](https://a
 
 ## Todos
 
-[ ] Support for using personal tokens to authenticate.
+- [ ] Handle site 404 on App
+- [ ] Support for using personal tokens to authenticate.
 
 ## License
 

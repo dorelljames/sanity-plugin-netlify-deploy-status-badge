@@ -1,6 +1,6 @@
 # sanity-plugin-netlify-deploy-status-badge
 
-Display Netlify's status badge in Sanity Studio and recent deploy logs.
+Display Netlify's status badge in Sanity Studio and your site's recent deploys. Plus, trigger a new build if you want to!
 
 ![](https://raw.githubusercontent.com/dorelljames/sanity-plugin-netlify-deploy-status-badge/master/src/assets/preview-full.png)
 

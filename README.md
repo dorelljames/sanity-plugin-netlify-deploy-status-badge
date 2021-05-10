@@ -33,7 +33,7 @@ With personal tokens, anyone who has access to your Sanity Studio can do adminis
 To configure OAuth2, go to your [User Settings > Applications > OAuth](https://app.netlify.com/user/applications). Click `New OAuth application`. Fill out the following:
 
 1. Application Name - `Sanity Plugin Netlify Deploy Status Badge` or any name you prefer.
-2. Redirect URI - `<YOUR_SANITY_STUDIO_URL>/netlify-deploy-status-badge` (eg: https://dorelljames.sanity.studio/netlify-status-badge)
+2. Redirect URI - `<YOUR_SANITY_STUDIO_URL>/netlify-deploy-status-badge` (eg: https://dorelljames.sanity.studio/netlify-deploy-status-badge)
 3. Click **Save** and copy generated **Client ID**.
 4. Open `netlify-deploy-status-badge.json` and add the following like this below:
 

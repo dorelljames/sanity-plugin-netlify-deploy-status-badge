@@ -21,8 +21,9 @@ import DeployItem from "./DeployItem";
 import { useNetlifyAuth } from "../hooks";
 import { siteId, oauthClientId } from "../config";
 import { getSiteDeploys, getSite, postSiteNewBuild } from "../utils";
-
-export const APP_REFRESH_INTERVAL = 10000;
+import { useLocalStorage } from "../hooks";
+import { namespace, APP_REFRESH_INTERVAL } from "../config";
+import { ArrowRightIcon } from "@sanity/icons";
 
 const STATE = {
   LOADING: "loading",
@@ -37,8 +38,8 @@ export default function App(props) {
   const toast = useToast();
   const { getAuthURL, authResponse, logout } = useNetlifyAuth();
 
-  const [site, setSite] = React.useState(null);
-  const [deploys, setDeploys] = React.useState([]);
+  const [site, setSite] = useLocalStorage(`${namespace}--site`);
+  const [deploys, setDeploys] = useLocalStorage(`${namespace}--deploys`);
   const [isSitePrivate, setIsSitePrivate] = React.useState(false);
   const [state, setState] = React.useState("idle"); // (loading > ready | error), (loading > needs_auth > authenticating > error | ready)
 
@@ -82,17 +83,17 @@ export default function App(props) {
 
   // Refresh App on every interval
   React.useEffect(() => {
+    let interval;
     if (state === STATE.READY) {
-      const interval = setInterval(() => {
+      interval = setInterval(() => {
         toast.push({
           title: `Refreshing site deploys...`,
           status: "info",
         });
         initOrRefreshApp();
       }, APP_REFRESH_INTERVAL);
-      return () => clearInterval(interval);
     }
-    return null;
+    return () => clearInterval(interval);
   }, []);
 
   function initOrRefreshApp() {
@@ -149,6 +150,8 @@ export default function App(props) {
     return logout().then(() => {
       if (isSitePrivate) {
         setDeploys([]);
+        window.localStorage.removeItem(`${namespace}--site`);
+        window.localStorage.removeItem(`${namespace}--deploys`);
       }
       setState(STATE.IDLE);
     });
@@ -219,7 +222,11 @@ export default function App(props) {
                         }
                       />
                     )}
-                    <Button text="Logout" onClick={handleClickLogout} />
+                    <Button
+                      text="Logout"
+                      onClick={handleClickLogout}
+                      icon={ArrowRightIcon}
+                    />
                   </Inline>
                 </Flex>
               )}
@@ -250,16 +257,16 @@ export default function App(props) {
               </Card>
             )}
 
-            {state === "loading" && (
+            {(state === "loading" ||
+              (state === "needs_auth" && isLoggedIn)) && (
               <Card borderBottom as="li" padding={4} radius={2}>
                 <Text as="em">Getting things ready...</Text>
               </Card>
             )}
 
-            {state === "ready" &&
-              deploys?.map((deploy) => (
-                <DeployItem key={deploy.id} deploy={deploy} site={site} />
-              ))}
+            {deploys?.map((deploy) => (
+              <DeployItem key={deploy.id} deploy={deploy} site={site} />
+            ))}
           </Stack>
         </Card>
       </Container>

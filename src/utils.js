@@ -1,4 +1,4 @@
-import { format, isToday, isYesterday } from "date-fns";
+import { format, isToday, isYesterday, getYear } from "date-fns";
 
 export const formatDeployTime = (time) => {
   const minutes = Math.floor(time / 60);
@@ -22,7 +22,9 @@ export const formatDeployDate = (d) => {
     return `Yesterday at ${format(d, "p")}`;
   }
 
-  return `${format(d, "PP")} at ${format(d, "p")}`;
+  const localizedDate = format(d, "PP").replace(`, ${getYear(d)}`, "");
+
+  return `${localizedDate} at ${format(d, "p")}`;
 };
 
 export const getSiteBadge = (siteId) => {
@@ -51,4 +53,36 @@ export const postSiteNewBuild = ({ siteId, clearCache, headers }) => {
     `https://api.netlify.com/api/v1/sites/${siteId}/builds`,
     options
   );
+};
+
+export const getDeployStatus = (deploy, publishedDeployId = null) => {
+  if (publishedDeployId === deploy?.id) {
+    return "published";
+  }
+
+  if (
+    deploy.state === "error" &&
+    deploy?.error_message?.toLowerCase().includes("canceled build") &&
+    deploy?.plugin_state === "failed_build"
+  ) {
+    return "failed_due_to_plugin_error";
+  }
+
+  if (
+    deploy?.state === "error" &&
+    deploy?.error_message
+      ?.toLowerCase()
+      .includes("build script returned non-zero exit code")
+  ) {
+    return "failed";
+  }
+
+  if (
+    deploy?.state === "error" ||
+    deploy?.error_message?.toLowerCase().includes("canceled build")
+  ) {
+    return "canceled";
+  }
+
+  return "";
 };

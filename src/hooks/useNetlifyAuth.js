@@ -1,5 +1,6 @@
 import React from "react";
 import { oauthClientId } from "../config";
+import { namespace } from "../config";
 
 export default function useNetlifyAuth() {
   const [authResponse, setAuthResponse] = React.useState(null);
@@ -20,13 +21,16 @@ export default function useNetlifyAuth() {
       document.location.hash = "";
 
       setAuthResponse(response);
-      window.localStorage.setItem("_auth", JSON.stringify(response));
+      window.localStorage.setItem(
+        `${namespace}--auth`,
+        JSON.stringify(response)
+      );
     }
   }, []);
 
   // Set auth token from localStorage
   React.useEffect(() => {
-    const authToken = window.localStorage.getItem("_auth");
+    const authToken = window.localStorage.getItem(`${namespace}--auth`);
     if (authToken) {
       setAuthResponse(JSON.parse(authToken));
     }
@@ -38,13 +42,13 @@ export default function useNetlifyAuth() {
 
   const logout = () => {
     return new Promise((resolve, reject) => {
-      window.localStorage.removeItem("_auth");
-      if (!window.localStorage.getItem("_auth")) {
+      window.localStorage.removeItem(`${namespace}--auth`);
+      if (!window.localStorage.getItem(`${namespace}--auth`)) {
         setAuthResponse(null);
         resolve("OK");
       }
 
-      reject("Unable to logout!");
+      reject(new Error("Unable to logout!"));
     });
   };
 

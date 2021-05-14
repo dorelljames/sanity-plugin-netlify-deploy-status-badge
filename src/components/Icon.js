@@ -1,8 +1,6 @@
 import React from "react";
-import { siteId } from "../config";
+import { siteId, BADGE_REFRESH_INTERVAL } from "../config";
 import { getSiteBadge } from "../utils";
-
-export const BADGE_REFRESH_INTERVAL = 10000;
 
 export default function Icon(props) {
   const [icon, setIcon] = React.useState(null);

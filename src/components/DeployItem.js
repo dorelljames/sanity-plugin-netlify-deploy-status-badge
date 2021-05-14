@@ -2,9 +2,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Card, Stack, Grid, Box, Flex, Text, Button, Badge } from "@sanity/ui";
-import { ArrowRightIcon } from "@sanity/icons";
+import { ArrowTopRightIcon } from "@sanity/icons";
 import Tooltip from "./Tooltip";
-import { formatDeployTime, formatDeployDate } from "../utils";
+import { formatDeployTime, formatDeployDate, getDeployStatus } from "../utils";
 
 export default function DeployItem({ deploy, site }) {
   return (
@@ -40,18 +40,44 @@ export default function DeployItem({ deploy, site }) {
                 </Badge>
               )}
               {deploy.state === "building" && (
-                <Badge padding={1} marginLeft="1" tone="caution">
+                <Badge mode="outline" tone="caution" padding={1} marginLeft="1">
                   Building
                 </Badge>
               )}
-              {site?.published_deploy?.id === deploy?.id && (
-                <Badge tone="positive" padding={1} marginLeft="1">
+              {getDeployStatus(deploy, site?.published_deploy?.id) ===
+                "published" && (
+                <Badge
+                  mode="outline"
+                  tone="positive"
+                  padding={1}
+                  marginLeft="1"
+                >
                   Published
                 </Badge>
               )}
-              {deploy.state === "error" && !deploy?.deploy_time && (
-                <Badge model="outline" padding={1} marginLeft="1">
-                  Cancelled
+              {getDeployStatus(deploy) === "canceled" && (
+                <Badge mode="outline" padding={1} marginLeft="1">
+                  Canceled
+                </Badge>
+              )}
+              {getDeployStatus(deploy) === "failed" && (
+                <Badge
+                  mode="outline"
+                  tone="critical"
+                  padding={1}
+                  marginLeft="1"
+                >
+                  Failed
+                </Badge>
+              )}
+              {getDeployStatus(deploy) === "failed_due_to_plugin_error" && (
+                <Badge
+                  mode="outline"
+                  tone="critical"
+                  padding={1}
+                  marginLeft="1"
+                >
+                  Failed Due To Plugin Error
                 </Badge>
               )}
             </Flex>
@@ -68,15 +94,17 @@ export default function DeployItem({ deploy, site }) {
             <Text weight="semibold">
               {formatDeployDate(new Date(deploy?.created_at))}
             </Text>
-            <Text muted size={1}>
-              {formatDeployTime(deploy?.deploy_time)}
-            </Text>
+            {deploy?.deploy_time && (
+              <Text muted size={1}>
+                {formatDeployTime(deploy?.deploy_time)}
+              </Text>
+            )}
           </Stack>
           <Box marginLeft={2}>
             <Tooltip text="View Deploy">
               <Button
                 tone="primary"
-                icon={ArrowRightIcon}
+                icon={ArrowTopRightIcon}
                 mode="ghost"
                 as="a"
                 href={`https://app.netlify.com/sites/${deploy?.name}/deploys/${deploy?.id}`}

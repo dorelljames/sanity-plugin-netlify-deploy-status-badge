@@ -1,5 +1,5 @@
 import React from "react";
-import { oauthClientId } from "../config";
+import { oauthClientId, personalAccessToken } from "../config";
 import { namespace } from "../config";
 
 export default function useNetlifyAuth() {
@@ -7,6 +7,12 @@ export default function useNetlifyAuth() {
 
   // Process our response from authorization
   React.useEffect(() => {
+    if (personalAccessToken !== undefined) {
+        console.log('found local access token');
+        setAuthResponse({access_token: personalAccessToken});
+        return;
+    }
+
     if (document.location.hash) {
       const response = document.location.hash
         .replace(/^#/, "")

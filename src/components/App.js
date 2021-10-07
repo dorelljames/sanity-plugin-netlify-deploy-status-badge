@@ -19,7 +19,7 @@ import {
 } from "@sanity/ui";
 import DeployItem from "./DeployItem";
 import { useNetlifyAuth } from "../hooks";
-import { siteId, oauthClientId } from "../config";
+import { siteId, oauthClientId, personalAccessToken } from "../config";
 import { getSiteDeploys, getSite, postSiteNewBuild } from "../utils";
 import { useLocalStorage } from "../hooks";
 import { namespace, APP_REFRESH_INTERVAL } from "../config";
@@ -43,7 +43,7 @@ export default function App(props) {
   const [isSitePrivate, setIsSitePrivate] = React.useState(false);
   const [state, setState] = React.useState("idle"); // (loading > ready | error), (loading > needs_auth > authenticating > error | ready)
 
-  const needsSetup = !oauthClientId;
+  const needsSetup = !oauthClientId && !personalAccessToken;
   const isLoggedIn = authResponse;
   const needsAuth = !needsSetup && !isLoggedIn;
   const requestOptions = isLoggedIn

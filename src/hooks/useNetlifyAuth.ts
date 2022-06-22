@@ -1,9 +1,17 @@
 import React from "react";
-import { oauthClientId } from "../config";
 import { namespace } from "../config";
 
-export default function useNetlifyAuth() {
-  const [authResponse, setAuthResponse] = React.useState(null);
+interface OAuthResponse {
+  access_token?: string;
+}
+
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export default function useNetlifyAuth({
+  oauthClientId,
+}: {
+  oauthClientId: string;
+}) {
+  const [authResponse, setAuthResponse] = React.useState<OAuthResponse>(null);
 
   // Process our response from authorization
   React.useEffect(() => {

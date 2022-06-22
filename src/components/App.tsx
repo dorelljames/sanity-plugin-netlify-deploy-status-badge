@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-no-bind */
-import React from "react";
+import React, { useCallback } from "react";
 import {
   Container,
   Heading,
@@ -19,7 +19,7 @@ import {
 } from "@sanity/ui";
 import DeployItem from "./DeployItem";
 import { useNetlifyAuth } from "../hooks";
-import { siteId, oauthClientId } from "../config";
+
 import { getSiteDeploys, getSite, postSiteNewBuild } from "../utils";
 import { useLocalStorage } from "../hooks";
 import { namespace, APP_REFRESH_INTERVAL } from "../config";
@@ -34,12 +34,18 @@ const STATE = {
   NOT_FOUND: "site_not_found",
 };
 
-export default function App(props) {
-  const toast = useToast();
-  const { getAuthURL, authResponse, logout } = useNetlifyAuth();
+import { type NetlifyDeployStatusBadgeConfig } from "../index";
+import { type DeployInterface } from "../types";
 
-  const [site, setSite] = useLocalStorage(`${namespace}--site`);
-  const [deploys, setDeploys] = useLocalStorage(`${namespace}--deploys`);
+export default function App(props: NetlifyDeployStatusBadgeConfig) {
+  const { siteId, oauthClientId } = props;
+  const toast = useToast();
+  const { getAuthURL, authResponse, logout } = useNetlifyAuth({
+    oauthClientId,
+  });
+
+  const [site, setSite] = useLocalStorage(`${namespace}--site`, "");
+  const [deploys, setDeploys] = useLocalStorage(`${namespace}--deploys`, []);
   const [isSitePrivate, setIsSitePrivate] = React.useState(false);
   const [state, setState] = React.useState("idle"); // (loading > ready | error), (loading > needs_auth > authenticating > error | ready)
 
@@ -72,18 +78,19 @@ export default function App(props) {
         setState(STATE.NEEDS_AUTH);
         setIsSitePrivate(true);
       });
-  }, [siteId]);
+  }, [setDeploys, setSite, siteId]);
 
   // We need auth here
   React.useEffect(() => {
     if (state === STATE.NEEDS_AUTH && isSitePrivate && siteId && isLoggedIn) {
       initOrRefreshApp();
     }
-  }, [isSitePrivate, siteId, isLoggedIn]);
+  }, [isSitePrivate, siteId, isLoggedIn, state, initOrRefreshApp]);
 
   // Refresh App on every interval
   React.useEffect(() => {
-    let interval;
+    // eslint-disable-next-line no-undef
+    let interval: NodeJS.Timer;
     if (state === STATE.READY) {
       interval = setInterval(() => {
         toast.push({
@@ -96,7 +103,7 @@ export default function App(props) {
     return () => clearInterval(interval);
   }, []);
 
-  function initOrRefreshApp() {
+  const initOrRefreshApp = useCallback(() => {
     getSite(siteId, requestOptions)
       .then((res) => res.json())
       .then(setSite);
@@ -113,7 +120,7 @@ export default function App(props) {
           setState(STATE.ERROR);
         }
       });
-  }
+  });
 
   function handleTriggerBuild(clearCache = false) {
     postSiteNewBuild({
@@ -160,7 +167,7 @@ export default function App(props) {
   return (
     <ThemeProvider theme={studioTheme}>
       <Container>
-        <Box margin={2} padding={4} radius={2}>
+        <Card margin={2} padding={4} radius={2}>
           <Flex justify="space-between" align="center">
             <Stack space={4}>
               <Heading size={3} as="h2">
@@ -232,7 +239,7 @@ export default function App(props) {
               )}
             </Stack>
           </Flex>
-        </Box>
+        </Card>
 
         <Card margin={4}>
           <Stack as="ul">
@@ -264,7 +271,7 @@ export default function App(props) {
               </Card>
             )}
 
-            {deploys?.map((deploy) => (
+            {deploys?.map((deploy: DeployInterface) => (
               <DeployItem key={deploy.id} deploy={deploy} site={site} />
             ))}
           </Stack>

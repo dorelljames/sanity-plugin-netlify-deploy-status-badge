@@ -1,6 +1,7 @@
 import { format, isToday, isYesterday, getYear } from "date-fns";
+import type { SiteId, DeployInterface, RequestOptions } from "./types";
 
-export const formatDeployTime = (time) => {
+export const formatDeployTime = (time: number): string => {
   const minutes = Math.floor(time / 60);
   const seconds = time % 60;
 
@@ -13,7 +14,7 @@ export const formatDeployTime = (time) => {
   }`;
 };
 
-export const formatDeployDate = (d) => {
+export const formatDeployDate = (d: Date): string => {
   if (isToday(d)) {
     return `Today at ${format(d, "p")}`;
   }
@@ -27,7 +28,7 @@ export const formatDeployDate = (d) => {
   return `${localizedDate} at ${format(d, "p")}`;
 };
 
-export const getSiteBadge = (siteId) => {
+export const getSiteBadge = (siteId: string): Promise<Response> => {
   const time = new Date().getTime();
 
   return fetch(
@@ -35,13 +36,28 @@ export const getSiteBadge = (siteId) => {
   );
 };
 
-export const getSiteDeploys = (siteId, options = null) =>
+export const getSiteDeploys = (
+  siteId: SiteId,
+  options?: RequestOptions
+): Promise<Response> =>
   fetch(`https://api.netlify.com/api/v1/sites/${siteId}/deploys`, options);
 
-export const getSite = (siteId, options = null) =>
+export const getSite = (
+  siteId: SiteId,
+  options?: RequestOptions
+): Promise<Response> =>
   fetch(`https://api.netlify.com/api/v1/sites/${siteId}`, options);
 
-export const postSiteNewBuild = ({ siteId, clearCache, headers }) => {
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export const postSiteNewBuild = ({
+  siteId,
+  clearCache,
+  headers,
+}: {
+  siteId: SiteId;
+  clearCache: boolean;
+  headers: RequestOptions["headers"];
+}) => {
   const options = {
     method: "POST",
     headers,
@@ -55,7 +71,10 @@ export const postSiteNewBuild = ({ siteId, clearCache, headers }) => {
   );
 };
 
-export const getDeployStatus = (deploy, publishedDeployId = null) => {
+export const getDeployStatus = (
+  deploy: DeployInterface,
+  publishedDeployId = null
+): string => {
   if (publishedDeployId === deploy?.id) {
     return "published";
   }

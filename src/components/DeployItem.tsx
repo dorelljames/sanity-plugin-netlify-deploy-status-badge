@@ -1,15 +1,20 @@
 /* eslint-disable camelcase */
 import React from "react";
-import PropTypes from "prop-types";
 import { Card, Stack, Grid, Box, Flex, Text, Button, Badge } from "@sanity/ui";
 import { ArrowTopRightIcon } from "@sanity/icons";
 import Tooltip from "./Tooltip";
 import { formatDeployTime, formatDeployDate, getDeployStatus } from "../utils";
+import { SiteInterface, DeployInterface } from "../types";
 
-export default function DeployItem({ deploy, site }) {
+type DeployItemProps = {
+  deploy: DeployInterface;
+  site: SiteInterface;
+};
+
+export default function DeployItem({ deploy, site }: DeployItemProps) {
   return (
     <Card borderBottom as="li" padding={4} radius={2} key={deploy?.id}>
-      <Grid columns={6} justify="space-between" align="center">
+      <Grid columns={6}>
         <Box column={4}>
           <Stack space={3}>
             <Flex align="center">
@@ -20,7 +25,7 @@ export default function DeployItem({ deploy, site }) {
                   rel="noopener noreferrer"
                   style={{ textTransform: `capitalize` }}
                 >
-                  {deploy?.context.replace("-", " ")}
+                  {deploy.context.replace("-", " ")}
                 </a>
               </Text>
               <Text weight="semibold">
@@ -35,12 +40,12 @@ export default function DeployItem({ deploy, site }) {
                 </a>
               </Text>
               {deploy.state === "new" && !deploy?.deploy_time && (
-                <Badge mode="outline" tone="caution" padding={1} marginLeft="1">
+                <Badge mode="outline" tone="caution" padding={1} marginLeft={1}>
                   New
                 </Badge>
               )}
               {deploy.state === "building" && (
-                <Badge mode="outline" tone="caution" padding={1} marginLeft="1">
+                <Badge mode="outline" tone="caution" padding={1} marginLeft={1}>
                   Building
                 </Badge>
               )}
@@ -50,13 +55,13 @@ export default function DeployItem({ deploy, site }) {
                   mode="outline"
                   tone="positive"
                   padding={1}
-                  marginLeft="1"
+                  marginLeft={1}
                 >
                   Published
                 </Badge>
               )}
               {getDeployStatus(deploy) === "canceled" && (
-                <Badge mode="outline" padding={1} marginLeft="1">
+                <Badge mode="outline" padding={1} marginLeft={1}>
                   Canceled
                 </Badge>
               )}
@@ -65,7 +70,7 @@ export default function DeployItem({ deploy, site }) {
                   mode="outline"
                   tone="critical"
                   padding={1}
-                  marginLeft="1"
+                  marginLeft={1}
                 >
                   Failed
                 </Badge>
@@ -75,7 +80,7 @@ export default function DeployItem({ deploy, site }) {
                   mode="outline"
                   tone="critical"
                   padding={1}
-                  marginLeft="1"
+                  marginLeft={1}
                 >
                   Failed Due To Plugin Error
                 </Badge>
@@ -118,24 +123,3 @@ export default function DeployItem({ deploy, site }) {
     </Card>
   );
 }
-
-DeployItem.propTypes = {
-  deploy: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    title: PropTypes.string,
-    name: PropTypes.string.isRequired,
-    created_at: PropTypes.string.isRequired,
-    context: PropTypes.string.isRequired,
-    branch: PropTypes.string.isRequired,
-    commit_url: PropTypes.string,
-    commit_ref: PropTypes.string,
-    deploy_time: PropTypes.number,
-    state: PropTypes.string.isRequired,
-    deploy_url: PropTypes.string.isRequired,
-  }).isRequired,
-  site: PropTypes.shape({
-    published_deploy: PropTypes.shape({
-      id: PropTypes.string.isRequired,
-    }),
-  }).isRequired,
-};

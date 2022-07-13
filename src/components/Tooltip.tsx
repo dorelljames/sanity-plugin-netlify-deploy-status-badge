@@ -2,7 +2,12 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Tooltip as STooltip, Box, Text } from "@sanity/ui";
 
-export default function Tooltip({ text, children }) {
+type TooltipProps = {
+  text: string;
+  children: React.ReactElement;
+};
+
+export default function Tooltip({ text, children }: TooltipProps) {
   return (
     <STooltip
       content={

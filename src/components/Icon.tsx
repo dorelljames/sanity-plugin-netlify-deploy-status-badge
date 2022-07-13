@@ -1,9 +1,10 @@
 import React from "react";
-import { siteId, BADGE_REFRESH_INTERVAL } from "../config";
+import { BADGE_REFRESH_INTERVAL } from "../config";
 import { getSiteBadge } from "../utils";
 
-export default function Icon(props) {
-  const [icon, setIcon] = React.useState(null);
+export default function Icon(props: any) {
+  const siteId = "d0139072-ed70-47b3-bdf6-2ca7e97283d3";
+  const [icon, setIcon] = React.useState<string>("");
 
   React.useEffect(() => {
     initializeBadge();

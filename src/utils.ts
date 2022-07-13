@@ -73,7 +73,7 @@ export const postSiteNewBuild = ({
 
 export const getDeployStatus = (
   deploy: DeployInterface,
-  publishedDeployId = null
+  publishedDeployId = ""
 ): string => {
   if (publishedDeployId === deploy?.id) {
     return "published";

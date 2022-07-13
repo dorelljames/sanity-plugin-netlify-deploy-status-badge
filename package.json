@@ -4,7 +4,7 @@
   "description": "",
   "author": "Dorell James <galangdj@gmail.com>",
   "license": "MIT",
-  "source": "./src/index.ts",
+  "source": "./src/index.tsx",
   "main": "./lib/cjs/index.js",
   "module": "./lib/esm/index.js",
   "types": "./lib/types/index.d.ts",
@@ -45,6 +45,8 @@
     "styled-components": "^5.2.3"
   },
   "devDependencies": {
+    "@parcel/packager-ts": "2.6.2",
+    "@parcel/transformer-typescript-types": "2.6.2",
     "@sanity/eslint-config-no-v2-imports": "^0.0.1-studio-v3.3",
     "@sanity/plugin-kit": "^0.1.0-v3-studio.1",
     "@typescript-eslint/eslint-plugin": "^5.29.0",

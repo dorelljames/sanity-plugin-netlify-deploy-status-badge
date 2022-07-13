@@ -2,8 +2,13 @@ import React from "react";
 import { namespace } from "../config";
 
 interface OAuthResponse {
-  access_token?: string;
+  access_token: string;
 }
+
+const initialAuthResponse = {
+  // eslint-disable-next-line camelcase
+  access_token: "",
+};
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export default function useNetlifyAuth({
@@ -11,30 +16,31 @@ export default function useNetlifyAuth({
 }: {
   oauthClientId: string;
 }) {
-  const [authResponse, setAuthResponse] = React.useState<OAuthResponse>(null);
+  const [authResponse, setAuthResponse] =
+    React.useState<OAuthResponse>(initialAuthResponse);
 
   // Process our response from authorization
-  React.useEffect(() => {
-    if (document.location.hash) {
-      const response = document.location.hash
-        .replace(/^#/, "")
-        .split("&")
-        .reduce((result, pair) => {
-          const keyValue = pair.split("=");
-          result[keyValue[0]] = keyValue[1];
-          return result;
-        }, {});
+  // React.useEffect(() => {
+  //   if (document.location.hash) {
+  //     const response = document.location.hash
+  //       .replace(/^#/, "")
+  //       .split("&")
+  //       .reduce((result, pair) => {
+  //         const keyValue = pair.split("=");
+  //         result[keyValue[0]] = keyValue[1];
+  //         return result;
+  //       }, {});
 
-      // Remove the token so it's not visible in the URL after we're done
-      document.location.hash = "";
+  //     // Remove the token so it's not visible in the URL after we're done
+  //     document.location.hash = "";
 
-      setAuthResponse(response);
-      window.localStorage.setItem(
-        `${namespace}--auth`,
-        JSON.stringify(response)
-      );
-    }
-  }, []);
+  //     setAuthResponse(response);
+  //     window.localStorage.setItem(
+  //       `${namespace}--auth`,
+  //       JSON.stringify(response)
+  //     );
+  //   }
+  // }, []);
 
   // Set auth token from localStorage
   React.useEffect(() => {
@@ -52,7 +58,7 @@ export default function useNetlifyAuth({
     return new Promise((resolve, reject) => {
       window.localStorage.removeItem(`${namespace}--auth`);
       if (!window.localStorage.getItem(`${namespace}--auth`)) {
-        setAuthResponse(null);
+        setAuthResponse(initialAuthResponse);
         resolve("OK");
       }
 

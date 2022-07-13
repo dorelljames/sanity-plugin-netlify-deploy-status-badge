@@ -25,3 +25,5 @@ export interface SiteInterface {
 export interface RequestOptions {
   headers?: { [key: string]: string };
 }
+
+export type ObjectLiteral = { [key: string]: any };

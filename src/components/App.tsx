@@ -1,11 +1,10 @@
 /* eslint-disable react/jsx-no-bind */
-import React, { useCallback } from "react";
+import React from "react";
 import {
   Container,
   Heading,
   Card,
   Stack,
-  Box,
   Flex,
   Text,
   Button,
@@ -26,6 +25,7 @@ import { namespace, APP_REFRESH_INTERVAL } from "../config";
 import { ArrowRightIcon } from "@sanity/icons";
 
 const STATE = {
+  IDLE: "idle",
   LOADING: "loading",
   READY: "ready",
   ERROR: "error",
@@ -35,7 +35,7 @@ const STATE = {
 };
 
 import { type NetlifyDeployStatusBadgeConfig } from "../index";
-import { type DeployInterface } from "../types";
+import { type DeployInterface, SiteInterface } from "../types";
 
 export default function App(props: NetlifyDeployStatusBadgeConfig) {
   const { siteId, oauthClientId } = props;
@@ -44,7 +44,10 @@ export default function App(props: NetlifyDeployStatusBadgeConfig) {
     oauthClientId,
   });
 
-  const [site, setSite] = useLocalStorage(`${namespace}--site`, "");
+  const [site, setSite] = useLocalStorage<SiteInterface>(
+    `${namespace}--site`,
+    null
+  );
   const [deploys, setDeploys] = useLocalStorage(`${namespace}--deploys`, []);
   const [isSitePrivate, setIsSitePrivate] = React.useState(false);
   const [state, setState] = React.useState("idle"); // (loading > ready | error), (loading > needs_auth > authenticating > error | ready)
@@ -52,11 +55,30 @@ export default function App(props: NetlifyDeployStatusBadgeConfig) {
   const needsSetup = !oauthClientId;
   const isLoggedIn = authResponse;
   const needsAuth = !needsSetup && !isLoggedIn;
-  const requestOptions = isLoggedIn
-    ? {
-        headers: { Authorization: `Bearer ${authResponse.access_token}` },
-      }
-    : null;
+  const requestOptions = React.useMemo(() => {
+    return {
+      headers: { Authorization: `Bearer ${authResponse.access_token}` },
+    };
+  }, [authResponse.access_token]);
+
+  const initOrRefreshApp = React.useCallback(() => {
+    getSite(siteId, requestOptions)
+      .then((res) => res.json())
+      .then(setSite);
+    getSiteDeploys(siteId, requestOptions)
+      .then((res) => {
+        if (!res.ok) throw new Error(res.statusText);
+        return res;
+      })
+      .then((res) => res.json())
+      .then(setDeploys)
+      .then(() => setTimeout(() => setState(STATE.READY), 1000))
+      .catch(() => {
+        if (isSitePrivate) {
+          setState(STATE.ERROR);
+        }
+      });
+  }, [isSitePrivate, requestOptions, setDeploys, setSite, siteId]);
 
   // Check if we need auth, if not, good :)
   React.useEffect(() => {
@@ -101,26 +123,8 @@ export default function App(props: NetlifyDeployStatusBadgeConfig) {
       }, APP_REFRESH_INTERVAL);
     }
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const initOrRefreshApp = useCallback(() => {
-    getSite(siteId, requestOptions)
-      .then((res) => res.json())
-      .then(setSite);
-    getSiteDeploys(siteId, requestOptions)
-      .then((res) => {
-        if (!res.ok) throw new Error(res.statusText);
-        return res;
-      })
-      .then((res) => res.json())
-      .then(setDeploys)
-      .then(() => setTimeout(() => setState(STATE.READY), 1000))
-      .catch(() => {
-        if (isSitePrivate) {
-          setState(STATE.ERROR);
-        }
-      });
-  });
 
   function handleTriggerBuild(clearCache = false) {
     postSiteNewBuild({

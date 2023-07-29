@@ -1,6 +1,5 @@
 import React from "react";
-import { oauthClientId } from "../config";
-import { namespace } from "../config";
+import { namespace, oauthClientId } from "../config";
 
 export default function useNetlifyAuth() {
   const [authResponse, setAuthResponse] = React.useState(null);
@@ -23,7 +22,7 @@ export default function useNetlifyAuth() {
       setAuthResponse(response);
       window.localStorage.setItem(
         `${namespace}--auth`,
-        JSON.stringify(response)
+        JSON.stringify(response),
       );
     }
   }, []);

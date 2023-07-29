@@ -1,6 +1,7 @@
 import { format, isToday, isYesterday, getYear } from "date-fns";
+import { NetlifyDeploy, NetlifySite } from "./types";
 
-export const formatDeployTime = (time) => {
+export const formatDeployTime = (time: number) => {
   const minutes = Math.floor(time / 60);
   const seconds = time % 60;
 
@@ -13,7 +14,7 @@ export const formatDeployTime = (time) => {
   }`;
 };
 
-export const formatDeployDate = (d) => {
+export const formatDeployDate = (d: number | Date) => {
   if (isToday(d)) {
     return `Today at ${format(d, "p")}`;
   }
@@ -27,21 +28,29 @@ export const formatDeployDate = (d) => {
   return `${localizedDate} at ${format(d, "p")}`;
 };
 
-export const getSiteBadge = (siteId) => {
+export const getSiteBadge = (siteId: NetlifySite["id"]) => {
   const time = new Date().getTime();
 
   return fetch(
-    `https://api.netlify.com/api/v1/badges/${siteId}/deploy-status?${time}`
+    `https://api.netlify.com/api/v1/badges/${siteId}/deploy-status?${time}`,
   );
 };
 
-export const getSiteDeploys = (siteId, options = null) =>
+export const getSiteDeploys = (siteId: NetlifySite["id"], options?: any) =>
   fetch(`https://api.netlify.com/api/v1/sites/${siteId}/deploys`, options);
 
-export const getSite = (siteId, options = null) =>
+export const getSite = (siteId: NetlifySite["id"], options?: any) =>
   fetch(`https://api.netlify.com/api/v1/sites/${siteId}`, options);
 
-export const postSiteNewBuild = ({ siteId, clearCache, headers }) => {
+export const postSiteNewBuild = ({
+  siteId,
+  clearCache,
+  headers,
+}: {
+  siteId: NetlifySite["id"];
+  clearCache: boolean;
+  headers: HeadersInit;
+}) => {
   const options = {
     method: "POST",
     headers,
@@ -51,11 +60,14 @@ export const postSiteNewBuild = ({ siteId, clearCache, headers }) => {
 
   return fetch(
     `https://api.netlify.com/api/v1/sites/${siteId}/builds`,
-    options
+    options,
   );
 };
 
-export const getDeployStatus = (deploy, publishedDeployId = null) => {
+export const getDeployStatus = (
+  deploy: NetlifyDeploy,
+  publishedDeployId = null,
+) => {
   if (publishedDeployId === deploy?.id) {
     return "published";
   }

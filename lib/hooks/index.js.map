@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../src/hooks/index.js"],"names":[],"mappings":";;;;;;;;;;;;;;;;;;AAAA;;AACA","sourcesContent":["export { default as useNetlifyAuth } from \"./useNetlifyAuth\";\nexport { default as useLocalStorage } from \"./useLocalStorage\";\n"],"file":"index.js"}

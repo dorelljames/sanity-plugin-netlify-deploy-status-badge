@@ -1,7 +1,6 @@
 import React from "react";
-// import { siteId, BADGE_REFRESH_INTERVAL } from "../config";
-import { getSiteBadge } from "../utils";
 import { NetlifyStatusBadgeConfig } from "../types";
+import { getSiteBadge } from "../helpers";
 
 const Icon = (props: NetlifyStatusBadgeConfig) => {
   const id = props.apiId;

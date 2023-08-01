@@ -1,15 +1,27 @@
 /* eslint-disable camelcase */
-import React from "react";
-import PropTypes from "prop-types";
-import { Card, Stack, Grid, Box, Flex, Text, Button, Badge } from "@sanity/ui";
+import {
+  Card,
+  Stack,
+  Grid,
+  Box,
+  Flex,
+  Text,
+  Button,
+  Tooltip,
+  Badge,
+} from "@sanity/ui";
 import { ArrowTopRightIcon } from "@sanity/icons";
-import Tooltip from "./Tooltip";
-import { formatDeployTime, formatDeployDate, getDeployStatus } from "../utils";
+import {
+  formatDeployTime,
+  formatDeployDate,
+  getDeployStatus,
+} from "../helpers";
+import { DeployItemProps } from "../types";
 
-export default function DeployItem({ deploy, site }) {
+const DeployItem = ({ deploy, publishedDeployId }: DeployItemProps) => {
   return (
     <Card borderBottom as="li" padding={4} radius={2} key={deploy?.id}>
-      <Grid columns={6} justify="space-between" align="center">
+      <Grid columns={6}>
         <Box column={4}>
           <Stack space={3}>
             <Flex align="center">
@@ -35,28 +47,27 @@ export default function DeployItem({ deploy, site }) {
                 </a>
               </Text>
               {deploy.state === "new" && !deploy?.deploy_time && (
-                <Badge mode="outline" tone="caution" padding={1} marginLeft="1">
+                <Badge mode="outline" tone="caution" padding={1} marginLeft={1}>
                   New
                 </Badge>
               )}
               {deploy.state === "building" && (
-                <Badge mode="outline" tone="caution" padding={1} marginLeft="1">
+                <Badge mode="outline" tone="caution" padding={1} marginLeft={1}>
                   Building
                 </Badge>
               )}
-              {getDeployStatus(deploy, site?.published_deploy?.id) ===
-                "published" && (
+              {getDeployStatus(deploy, publishedDeployId) === "published" && (
                 <Badge
                   mode="outline"
                   tone="positive"
                   padding={1}
-                  marginLeft="1"
+                  marginLeft={1}
                 >
                   Published
                 </Badge>
               )}
               {getDeployStatus(deploy) === "canceled" && (
-                <Badge mode="outline" padding={1} marginLeft="1">
+                <Badge mode="outline" padding={1} marginLeft={1}>
                   Canceled
                 </Badge>
               )}
@@ -65,7 +76,7 @@ export default function DeployItem({ deploy, site }) {
                   mode="outline"
                   tone="critical"
                   padding={1}
-                  marginLeft="1"
+                  marginLeft={1}
                 >
                   Failed
                 </Badge>
@@ -75,7 +86,7 @@ export default function DeployItem({ deploy, site }) {
                   mode="outline"
                   tone="critical"
                   padding={1}
-                  marginLeft="1"
+                  marginLeft={1}
                 >
                   Failed Due To Plugin Error
                 </Badge>
@@ -94,14 +105,14 @@ export default function DeployItem({ deploy, site }) {
             <Text weight="semibold">
               {formatDeployDate(new Date(deploy?.created_at))}
             </Text>
-            {deploy?.deploy_time && (
+            {!!deploy?.deploy_time && (
               <Text muted size={1}>
                 {formatDeployTime(deploy?.deploy_time)}
               </Text>
             )}
           </Stack>
           <Box marginLeft={2}>
-            <Tooltip text="View Deploy">
+            <Tooltip content={"View Deploy"}>
               <Button
                 tone="primary"
                 icon={ArrowTopRightIcon}
@@ -117,25 +128,6 @@ export default function DeployItem({ deploy, site }) {
       </Grid>
     </Card>
   );
-}
-
-DeployItem.propTypes = {
-  deploy: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    title: PropTypes.string,
-    name: PropTypes.string.isRequired,
-    created_at: PropTypes.string.isRequired,
-    context: PropTypes.string.isRequired,
-    branch: PropTypes.string.isRequired,
-    commit_url: PropTypes.string,
-    commit_ref: PropTypes.string,
-    deploy_time: PropTypes.number,
-    state: PropTypes.string.isRequired,
-    deploy_url: PropTypes.string.isRequired,
-  }).isRequired,
-  site: PropTypes.shape({
-    published_deploy: PropTypes.shape({
-      id: PropTypes.string.isRequired,
-    }),
-  }).isRequired,
 };
+
+export default DeployItem;

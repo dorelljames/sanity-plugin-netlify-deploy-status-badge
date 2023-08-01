@@ -1,6 +1,7 @@
 import { definePlugin } from "sanity";
 import { NetlifyStatusBadgeConfig } from "./types";
-import { initTool } from "./components/initTool";
+import { initTool } from "./components";
+import { namespace } from "./config";
 
 class ConfigurationError extends Error {
   constructor(message: string) {
@@ -10,19 +11,18 @@ class ConfigurationError extends Error {
 }
 
 export const netlifyStatusBadge = definePlugin<NetlifyStatusBadgeConfig>(
-  (options) => {
-    if (!("apiId" in options) && !("auth" in options)) {
+  (config) => {
+    // @todo: update configuration to make sure we have the required config
+    if (!("apiId" in config) && !("auth" in config)) {
       throw new ConfigurationError(
         "'apiId' and 'auth' are required with either 'oauthClientId' or 'personalAccessToken'",
       );
     }
 
     return {
-      name: "netlify-deploy-status-badge",
-      // title: "‎", // invisible character
-      title: "NS",
+      name: namespace,
       tools: (prev) => {
-        const tool = initTool(options);
+        const tool = initTool(config);
 
         return [...prev, tool];
       },

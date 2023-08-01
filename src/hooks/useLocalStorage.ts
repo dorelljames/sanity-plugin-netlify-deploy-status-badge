@@ -18,7 +18,10 @@ import { useState } from "react";
 // }
 
 // Hook
-export default function useLocalStorage(key, initialValue) {
+export default function useLocalStorage<T>(
+  key: string,
+  initialValue: T,
+): [T, (value: T) => void] {
   // State to store our value
   // Pass initial state function to useState so logic is only executed once
   const [storedValue, setStoredValue] = useState(() => {
@@ -29,14 +32,14 @@ export default function useLocalStorage(key, initialValue) {
       return item ? JSON.parse(item) : initialValue;
     } catch (error) {
       // If error also return initialValue
-      console.log(error);
+      // console.log(error);
       return initialValue;
     }
   });
 
   // Return a wrapped version of useState's setter function that ...
   // ... persists the new value to localStorage.
-  const setValue = (value) => {
+  const setValue = (value: any) => {
     try {
       // Allow value to be a function so we have same API as useState
       const valueToStore =
@@ -47,7 +50,7 @@ export default function useLocalStorage(key, initialValue) {
       window.localStorage.setItem(key, JSON.stringify(valueToStore));
     } catch (error) {
       // A more advanced implementation would handle the error case
-      console.log(error);
+      // console.log(error);
     }
   };
 

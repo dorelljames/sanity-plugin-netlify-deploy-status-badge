@@ -1,17 +1,19 @@
-import { NetlifyStatusBadgeConfig } from "../types";
 import { ComponentType } from "react";
-import { Tool as SanityTool } from "sanity";
-import Icon from "./Icon";
+import { Tool as SanityTool, Tool } from "sanity";
+import { namespace } from "../config";
+import { NetlifyStatusBadgeConfig } from "../types";
 import App from "./App";
+import Icon from "./Icon";
 
-export const initTool = (options: NetlifyStatusBadgeConfig): SanityTool => {
-  const IconWithProps = <Icon {...options} />;
+const initTool = (options: NetlifyStatusBadgeConfig): SanityTool => {
+  const IconWithConfig = <Icon {...options} />;
 
   return {
-    title: "‎",
-    // title: "NS2",
-    name: "netlify-deploy-status-badge",
-    icon: IconWithProps as unknown as ComponentType,
-    component: App,
+    title: "‎", // invisible character to make way for dynamic icon
+    name: namespace,
+    icon: IconWithConfig as unknown as ComponentType,
+    component: App as unknown as ComponentType<{ tool: Tool<any> }>,
   };
 };
+
+export default initTool;

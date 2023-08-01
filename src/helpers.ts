@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { format, isToday, isYesterday, getYear } from "date-fns";
 import { NetlifyDeploy, NetlifySite } from "./types";
 
@@ -36,24 +37,29 @@ export const getSiteBadge = (siteId: NetlifySite["id"]) => {
   );
 };
 
-export const getSiteDeploys = (siteId: NetlifySite["id"], options?: any) =>
-  fetch(`https://api.netlify.com/api/v1/sites/${siteId}/deploys`, options);
+export const getSiteDeploys = (
+  siteId: NetlifySite["id"],
+  // eslint-disable-next-line no-undef
+  options?: RequestInit,
+) => fetch(`https://api.netlify.com/api/v1/sites/${siteId}/deploys`, options);
 
-export const getSite = (siteId: NetlifySite["id"], options?: any) =>
+// eslint-disable-next-line no-undef
+export const getSite = (siteId: NetlifySite["id"], options?: RequestInit) =>
   fetch(`https://api.netlify.com/api/v1/sites/${siteId}`, options);
 
 export const postSiteNewBuild = ({
   siteId,
   clearCache,
-  headers,
+  requestOptions,
 }: {
   siteId: NetlifySite["id"];
   clearCache: boolean;
-  headers: HeadersInit;
+  // eslint-disable-next-line no-undef
+  requestOptions?: RequestInit;
 }) => {
   const options = {
     method: "POST",
-    headers,
+    headers: requestOptions?.headers,
     // eslint-disable-next-line camelcase
     body: JSON.stringify({ clear_cache: clearCache }),
   };
@@ -66,7 +72,7 @@ export const postSiteNewBuild = ({
 
 export const getDeployStatus = (
   deploy: NetlifyDeploy,
-  publishedDeployId = null,
+  publishedDeployId: null | string = null,
 ) => {
   if (publishedDeployId === deploy?.id) {
     return "published";

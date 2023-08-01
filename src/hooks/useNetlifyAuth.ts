@@ -1,8 +1,12 @@
 import React from "react";
-import { namespace, oauthClientId } from "../config";
+import { namespace } from "../config";
+import { AuthResponse, NetlifyStatusBadgeConfig } from "../types";
 
-export default function useNetlifyAuth() {
-  const [authResponse, setAuthResponse] = React.useState(null);
+const useNetlifyAuth = (config: NetlifyStatusBadgeConfig) => {
+  const oauthClientId = config.auth.oauthClientId;
+  const [authResponse, setAuthResponse] = React.useState<AuthResponse | null>(
+    null,
+  );
 
   // Process our response from authorization
   React.useEffect(() => {
@@ -12,14 +16,20 @@ export default function useNetlifyAuth() {
         .split("&")
         .reduce((result, pair) => {
           const keyValue = pair.split("=");
-          result[keyValue[0]] = keyValue[1];
+          if (keyValue.length !== 2) return result;
+
+          const key = keyValue[0];
+          const value = keyValue[1];
+
+          (result as any)[key] = value;
+
           return result;
         }, {});
 
       // Remove the token so it's not visible in the URL after we're done
       document.location.hash = "";
 
-      setAuthResponse(response);
+      setAuthResponse(response as AuthResponse);
       window.localStorage.setItem(
         `${namespace}--auth`,
         JSON.stringify(response),
@@ -60,4 +70,6 @@ export default function useNetlifyAuth() {
   };
 
   return { authResponse, getAuthURL, getHeaders, logout };
-}
+};
+
+export default useNetlifyAuth;

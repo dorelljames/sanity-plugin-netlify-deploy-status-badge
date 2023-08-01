@@ -8,3 +8,13 @@
 export const namespace = "netlify-deploy-status-badge";
 export const APP_REFRESH_INTERVAL = 10000;
 export const BADGE_REFRESH_INTERVAL = 10000;
+
+export const STATE = {
+  IDLE: "idle",
+  LOADING: "loading",
+  READY: "ready",
+  ERROR: "error",
+  NEEDS_AUTH: "needs_auth",
+  AUTHENTICATING: "authenticating",
+  NOT_FOUND: "site_not_found",
+};

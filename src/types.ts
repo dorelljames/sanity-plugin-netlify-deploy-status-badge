@@ -31,12 +31,11 @@ export interface DeployItemProps {
   publishedDeployId: NetlifyDeploy["id"];
 }
 
-export interface NetlifyStatusBadgeConfig {
+type Auth = { oauthClientId: string };
+
+export interface NetlifyDeployStatusBadgeConfig {
   apiId: NetlifyDeploy["id"];
-  auth: {
-    oauthClientId?: string;
-    personalAccessToken?: string;
-  };
+  auth: Auth;
 }
 
 export interface SetupAuthButtonProps {

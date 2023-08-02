@@ -1,8 +1,8 @@
 import React from "react";
-import { NetlifyStatusBadgeConfig } from "../types";
+import { NetlifyDeployStatusBadgeConfig } from "../types";
 import { getSiteBadge } from "../helpers";
 
-const Icon = (props: NetlifyStatusBadgeConfig) => {
+const Icon = (props: NetlifyDeployStatusBadgeConfig) => {
   const id = props.apiId;
   const [icon, setIcon] = React.useState("");
 

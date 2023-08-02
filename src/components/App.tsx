@@ -20,11 +20,16 @@ import {
 import { STATE, namespace } from "../config";
 import { getSite, getSiteDeploys, postSiteNewBuild } from "../helpers";
 import { useLocalStorage, useNetlifyAuth } from "../hooks";
-import { NetlifyDeploy, NetlifySite, NetlifyStatusBadgeConfig } from "../types";
+import {
+  NetlifyDeploy,
+  NetlifySite,
+  NetlifyDeployStatusBadgeConfig,
+} from "../types";
 
 const App = (props: { tool: SanityTool }) => {
   const toast = useToast();
-  const config: NetlifyStatusBadgeConfig = (props.tool.icon! as any).props;
+  const config: NetlifyDeployStatusBadgeConfig = (props.tool.icon! as any)
+    .props;
   const siteId = config?.apiId;
 
   const { getAuthURL, authResponse, logout } = useNetlifyAuth(config);

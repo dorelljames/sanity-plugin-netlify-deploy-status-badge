@@ -1,5 +1,5 @@
 import { definePlugin } from "sanity";
-import { NetlifyStatusBadgeConfig } from "./types";
+import { NetlifyDeployStatusBadgeConfig } from "./types";
 import { initTool } from "./components";
 import { namespace } from "./config";
 
@@ -10,9 +10,26 @@ class ConfigurationError extends Error {
   }
 }
 
-export const netlifyStatusBadge = definePlugin<NetlifyStatusBadgeConfig>(
-  (config) => {
-    // @todo: update configuration to make sure we have the required config
+/**
+ * Usage in `sanity.config.ts` (or .js)
+ *
+ * ```ts
+ * import {netlifyDeployStatusBadge} from 'sanity-plugin-netlify-status-badge'
+ *
+ * export default defineConfig({
+ *   plugins: [
+ *     netlifyDeployStatusBadge({
+ *       apiId: 'YOUR_NETLIFY_API_OR_SITE_ID',
+ *       auth: {
+ *          oauthClientId: "YOUR_NETLIFY_OAUTH_APP_CLIENT_ID",
+ *       }
+ *     }),
+ *   ]
+ * });
+ * ```
+ */
+export const netlifyDeployStatusBadge =
+  definePlugin<NetlifyDeployStatusBadgeConfig>((config) => {
     if (!("apiId" in config) && !("auth" in config)) {
       throw new ConfigurationError(
         "'apiId' and 'auth' are required with either 'oauthClientId' or 'personalAccessToken'",
@@ -27,5 +44,4 @@ export const netlifyStatusBadge = definePlugin<NetlifyStatusBadgeConfig>(
         return [...prev, tool];
       },
     };
-  },
-);
+  });

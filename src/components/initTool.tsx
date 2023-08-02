@@ -1,11 +1,11 @@
 import { ComponentType } from "react";
 import { Tool as SanityTool, Tool } from "sanity";
 import { namespace } from "../config";
-import { NetlifyStatusBadgeConfig } from "../types";
+import { NetlifyDeployStatusBadgeConfig } from "../types";
 import App from "./App";
 import Icon from "./Icon";
 
-const initTool = (options: NetlifyStatusBadgeConfig): SanityTool => {
+const initTool = (options: NetlifyDeployStatusBadgeConfig): SanityTool => {
   const IconWithConfig = <Icon {...options} />;
 
   return {

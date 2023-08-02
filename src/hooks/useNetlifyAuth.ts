@@ -1,8 +1,8 @@
 import React from "react";
 import { namespace } from "../config";
-import { AuthResponse, NetlifyStatusBadgeConfig } from "../types";
+import { AuthResponse, NetlifyDeployStatusBadgeConfig } from "../types";
 
-const useNetlifyAuth = (config: NetlifyStatusBadgeConfig) => {
+const useNetlifyAuth = (config: NetlifyDeployStatusBadgeConfig) => {
   const oauthClientId = config.auth.oauthClientId;
   const [authResponse, setAuthResponse] = React.useState<AuthResponse | null>(
     null,

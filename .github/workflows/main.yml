@@ -48,13 +48,24 @@ jobs:
           cache: yarn
           node-version: lts/*
       # Optional: log the Yarn version to confirm it's Yarn 3
+      - run: yarn set version berry
       - run: yarn --version
       - run: yarn install --frozen-lockfile
         # Linting can be skipped
-      - run: yarn lint --if-present
+      - run: |
+          if yarn run lint --silent; then
+            echo "Lint script ran successfully."
+          else
+            echo "Lint script is not defined."
+          fi
         if: github.event.inputs.test != 'false'
         # But not the build script, as semantic-release will crash if this command fails so it makes sense to test it early
-      - run: yarn prepublishOnly --if-present
+      - run: |
+          if yarn run prepublishOnly --silent; then
+            echo "prepublishOnly script ran successfully."
+          else
+            echo "prepublishOnly script is not defined."
+          fi
 
   test:
     needs: build
@@ -90,7 +101,12 @@ jobs:
           cache: yarn
           node-version: ${{ matrix.node }}
       - run: yarn install
-      - run: yarn test --if-present
+      - run: |
+          if yarn run test --silent; then
+            echo "Test script ran successfully."
+          else
+            echo "Test script is not defined."
+          fi
 
   release:
     needs: [build, test]

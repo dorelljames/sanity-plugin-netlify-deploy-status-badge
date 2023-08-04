@@ -48,7 +48,6 @@ const App = (props: { tool: SanityTool }) => {
   );
   const [isSitePrivate, setIsSitePrivate] = React.useState(false); // Deploy log visibility is set to "private"
   const [state, setState] = React.useState("idle"); // (loading > site_404), (loading > ready | error), (loading > needs_auth > authenticating > error | ready)
-  console.log("🚀 ~ file: App.tsx:51 ~ App ~ state:", state);
 
   const isLoggedIn = !!authResponse?.access_token;
   const siteNotFound = state === STATE.SITE_404;

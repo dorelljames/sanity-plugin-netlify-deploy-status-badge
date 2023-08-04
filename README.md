@@ -1,10 +1,12 @@
 # sanity-plugin-netlify-deploy-status-badge
 
+[![CI & Release](https://github.com/dorelljames/sanity-plugin-netlify-deploy-status-badge/actions/workflows/main.yml/badge.svg)](https://github.com/dorelljames/sanity-plugin-netlify-deploy-status-badge/actions/workflows/main.yml)
+
 > This is a Sanity Studio v3 plugin. For the v2 version, please refer to the [legacy-v2](https://github.com/dorelljames/sanity-plugin-netlify-deploy-status-badge/tree/legacy-v2) branch.
 
 Display Netlify's status badge in Sanity Studio and your site's recent deploys. Plus, trigger a new build if you want to!
 
-![](https://raw.githubusercontent.com/dorelljames/sanity-plugin-netlify-deploy-status-badge/master/src/assets/preview-full.png)
+![](https://github.com/dorelljames/sanity-plugin-netlify-deploy-status-badge/blob/legacy-v2/src/assets/preview-full.png?raw=true)
 
 ## Installation
 
@@ -96,10 +98,6 @@ netlifyDeployStatusBadge({
 
 MIT © Dorell James
 See LICENSE
-
-## License
-
-[MIT](LICENSE) © Dorell James
 
 ## Develop & test
 

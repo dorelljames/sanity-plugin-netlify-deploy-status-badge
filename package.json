@@ -1,6 +1,6 @@
 {
   "name": "sanity-plugin-netlify-deploy-status-badge",
-  "version": "3.0.0",
+  "version": "1.0.0",
   "description": "Display Netlify's status badge in Sanity Studio and your site's recent deploys. Plus, trigger a new build if you want to!",
   "keywords": [
     "sanity",

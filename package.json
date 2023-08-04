@@ -51,7 +51,8 @@
     "@sanity/ui": "^1.7.4",
     "date-fns": "^2.21.3",
     "prop-types": "15.8.1",
-    "styled-components": "^6.0.5"
+    "styled-components": "^6.0.5",
+    "zod": "^3.21.4"
   },
   "devDependencies": {
     "@sanity/eslint-config-no-v2-imports": "^0.0.1-studio-v3.3",

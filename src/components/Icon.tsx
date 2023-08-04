@@ -9,18 +9,16 @@ const Icon = (props: NetlifyDeployStatusBadgeConfig) => {
   const initialize = React.useCallback(() => {
     if (id) {
       getSiteBadge(id)
-        .then((res) => {
-          if (!res.ok) throw new Error(res.statusText);
-          return res.text();
+        .then(([err, iconResult]) => {
+          setIcon(err || iconResult);
         })
-        .then((result) => setIcon(result))
         .catch(() => setIcon(`Netlify Site 404`));
     }
   }, [id]);
 
   React.useEffect(() => {
     initialize();
-  }, [initialize]);
+  }, []);
 
   // eslint-disable-next-line react/no-danger
   return <div dangerouslySetInnerHTML={{ __html: icon }} />;

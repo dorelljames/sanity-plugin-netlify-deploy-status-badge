@@ -34,18 +34,43 @@ export const getSiteBadge = (siteId: NetlifySite["id"]) => {
 
   return fetch(
     `https://api.netlify.com/api/v1/badges/${siteId}/deploy-status?${time}`,
-  );
+  )
+    .then(async (res) => {
+      if (!res.ok) {
+        return [res.status, null];
+      }
+
+      return [null, await res.text()];
+    })
+    .catch((err) => [err, null]);
 };
 
 export const getSiteDeploys = (
   siteId: NetlifySite["id"],
   // eslint-disable-next-line no-undef
   options?: RequestInit,
-) => fetch(`https://api.netlify.com/api/v1/sites/${siteId}/deploys`, options);
+) =>
+  fetch(`https://api.netlify.com/api/v1/sites/${siteId}/deploys`, options)
+    .then(async (res) => {
+      if (!res.ok) {
+        return [res.status, null];
+      }
+
+      return [null, await res.json()];
+    })
+    .catch((err) => [err, null]);
 
 // eslint-disable-next-line no-undef
 export const getSite = (siteId: NetlifySite["id"], options?: RequestInit) =>
-  fetch(`https://api.netlify.com/api/v1/sites/${siteId}`, options);
+  fetch(`https://api.netlify.com/api/v1/sites/${siteId}`, options)
+    .then(async (res) => {
+      if (!res.ok) {
+        return [res.status, null];
+      }
+
+      return [null, await res.json()];
+    })
+    .catch((err) => [err, null]);
 
 export const postSiteNewBuild = ({
   siteId,

@@ -3,7 +3,7 @@ import { namespace } from "../config";
 import { AuthResponse, NetlifyDeployStatusBadgeConfig } from "../types";
 
 const useNetlifyAuth = (config: NetlifyDeployStatusBadgeConfig) => {
-  const oauthClientId = config.auth.oauthClientId;
+  const oauthClientId = config.auth?.oauthClientId;
   const [authResponse, setAuthResponse] = React.useState<AuthResponse | null>(
     null,
   );

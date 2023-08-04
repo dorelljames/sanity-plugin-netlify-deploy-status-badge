@@ -10,6 +10,7 @@ export const APP_REFRESH_INTERVAL = 10000;
 export const BADGE_REFRESH_INTERVAL = 10000;
 
 export const STATE = {
+  SITE_404: "site_404",
   IDLE: "idle",
   LOADING: "loading",
   READY: "ready",

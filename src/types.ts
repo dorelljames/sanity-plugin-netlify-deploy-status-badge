@@ -35,7 +35,7 @@ type Auth = { oauthClientId: string };
 
 export interface NetlifyDeployStatusBadgeConfig {
   apiId: NetlifyDeploy["id"];
-  auth: Auth;
+  auth?: Auth;
 }
 
 export interface SetupAuthButtonProps {

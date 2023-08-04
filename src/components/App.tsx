@@ -18,7 +18,12 @@ import {
   SetupOAuthButton,
 } from "../components";
 import { STATE, namespace } from "../config";
-import { getSite, getSiteDeploys, postSiteNewBuild } from "../helpers";
+import {
+  getSite,
+  getSiteBadge,
+  getSiteDeploys,
+  postSiteNewBuild,
+} from "../helpers";
 import { useLocalStorage, useNetlifyAuth } from "../hooks";
 import {
   NetlifyDeploy,
@@ -42,10 +47,12 @@ const App = (props: { tool: SanityTool }) => {
     [],
   );
   const [isSitePrivate, setIsSitePrivate] = React.useState(false); // Deploy log visibility is set to "private"
-  const [state, setState] = React.useState("idle"); // (loading > ready | error), (loading > needs_auth > authenticating > error | ready)
+  const [state, setState] = React.useState("idle"); // (loading > site_404), (loading > ready | error), (loading > needs_auth > authenticating > error | ready)
+  console.log("🚀 ~ file: App.tsx:51 ~ App ~ state:", state);
 
-  const needsSetup = !config?.auth?.oauthClientId;
   const isLoggedIn = !!authResponse?.access_token;
+  const siteNotFound = state === STATE.SITE_404;
+  const needsSetup = !config?.auth?.oauthClientId;
   const needsAuth = !needsSetup && !isLoggedIn;
   const requestOptions = React.useMemo(
     () =>
@@ -100,30 +107,42 @@ const App = (props: { tool: SanityTool }) => {
     [siteId, requestOptions, toast],
   );
 
+  const fetchSiteDetails = React.useCallback(() => {
+    function init() {
+      return Promise.all([
+        getSiteBadge(siteId),
+        getSite(siteId, requestOptions),
+        getSiteDeploys(siteId, requestOptions),
+      ]);
+    }
+
+    return init();
+  }, [siteId, requestOptions]);
+
   // Check if we need auth, if not, good :)
   React.useEffect(() => {
     if (siteId) {
       setState(STATE.LOADING);
+      fetchSiteDetails().then((result) => {
+        const [siteBadgeDetails, siteDetails, siteDeploysDetails] = result;
+        if (siteBadgeDetails?.[0]) {
+          setState(STATE.SITE_404);
+          return;
+        }
 
-      Promise.all([
-        getSiteDeploys(siteId, requestOptions)
-          .then((res) => {
-            if (!res.ok && res.status === 401) throw new Error(res.statusText);
-            return res;
-          })
-          .then((res) => res.json()),
-        getSite(siteId, requestOptions).then((res) => res.json()),
-      ])
-        .then((result) => {
-          setDeploys(result[0]);
-          setSite(result[1]);
-        })
-        .catch(() => {
-          setState(STATE.NEEDS_AUTH);
+        if (siteDetails?.[0]) {
+          setSite(null);
           setDeploys([]);
           setIsSitePrivate(true);
-        })
-        .finally(() => setState(STATE.READY));
+          setState(STATE.NEEDS_AUTH);
+          return;
+        }
+
+        // All good here :)
+        setState(STATE.READY);
+        setDeploys(siteDeploysDetails[1]);
+        setSite(siteDetails[1]);
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [siteId, requestOptions?.headers.Authorization]);
@@ -141,21 +160,33 @@ const App = (props: { tool: SanityTool }) => {
             <Text muted>Showing your recent site deploys.</Text>
           </Stack>
           <Stack space={3}>
-            {needsSetup && <SetupOAuthButton isSitePrivate={isSitePrivate} />}
+            {siteNotFound ? (
+              <Card padding={4} radius={2} shadow={1}>
+                <Text muted size={1}>
+                  Oops, we couldn't find the site you're trying to configure!
+                </Text>
+              </Card>
+            ) : (
+              <>
+                {state !== STATE.IDLE && needsSetup && (
+                  <SetupOAuthButton isSitePrivate={isSitePrivate} />
+                )}
 
-            {needsAuth && (
-              <SetupAuthButton
-                isSitePrivate={isSitePrivate}
-                onAuthorize={handleClickAuthorize}
-              />
-            )}
+                {state !== STATE.IDLE && needsAuth && (
+                  <SetupAuthButton
+                    isSitePrivate={isSitePrivate}
+                    onAuthorize={handleClickAuthorize}
+                  />
+                )}
 
-            {isLoggedIn && (
-              <HeaderButtons
-                onLogout={handleClickLogout}
-                onTriggerBuild={handleTriggerBuild}
-                showTriggerDeployButton={state === "ready"}
-              />
+                {state !== STATE.IDLE && isLoggedIn && (
+                  <HeaderButtons
+                    onLogout={handleClickLogout}
+                    onTriggerBuild={handleTriggerBuild}
+                    showTriggerDeployButton={state === "ready"}
+                  />
+                )}
+              </>
             )}
           </Stack>
         </Flex>

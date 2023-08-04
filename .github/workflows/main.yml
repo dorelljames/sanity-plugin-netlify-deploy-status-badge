@@ -47,6 +47,8 @@ jobs:
         with:
           cache: yarn
           node-version: lts/*
+      # Optional: log the Yarn version to confirm it's Yarn 3
+      - run: yarn --version
       - run: yarn install --frozen-lockfile
         # Linting can be skipped
       - run: yarn lint --if-present

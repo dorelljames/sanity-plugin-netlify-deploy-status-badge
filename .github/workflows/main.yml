@@ -107,6 +107,7 @@ jobs:
           else
             echo "Test script is not defined."
           fi
+        shell: bash
 
   release:
     needs: [build, test]

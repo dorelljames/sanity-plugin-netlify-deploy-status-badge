@@ -1,0 +1,7 @@
+{
+  "extends": "@sanity/semantic-release-preset",
+  "branches": [
+    "master",
+    { "name": "legacy-v2", "channel": "legacy-v2", "range": "0.x.x" }
+  ]
+}

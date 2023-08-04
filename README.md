@@ -1,5 +1,7 @@
 # sanity-plugin-netlify-deploy-status-badge
 
+> This is a Sanity Studio v3 plugin. For the v2 version, please refer to the [legacy-v2](https://github.com/dorelljames/sanity-plugin-netlify-deploy-status-badge/tree/legacy-v2) branch.
+
 Display Netlify's status badge in Sanity Studio and your site's recent deploys. Plus, trigger a new build if you want to!
 
 ![](https://raw.githubusercontent.com/dorelljames/sanity-plugin-netlify-deploy-status-badge/master/src/assets/preview-full.png)
@@ -58,13 +60,13 @@ export default defineConfig({
 
 ### Authentication
 
-By default, accessing deploy logs via the API does not require authentication. However, if you set your site's deploy logs to private, the plugin need to be setup with OAuth for you to authenticate in order to pull in data. Being authenticated also enables you to trigger a new build on your site.
+By default, accessing deploy logs via the API does not require authentication. However, if you set your site's deploy logs to private, the plugin needs to be setup with OAuth for you to authenticate and pull in data to show site deploys. Being authenticated also enables you to trigger a new build on your site.
 
 Authentication can be done in two ways: OAuth or personal tokens. Support for the latter will be implemented later as I'll need to spend more time integrating it with [sanity-studio-secrets](https://github.com/sanity-io/sanity-studio-secrets).
 
 #### Which one to choose?
 
-With personal tokens, anyone who has access to your Sanity Studio can do administrative actions on your behalf such as trigger a new build, etc. while with OAuth, anyone who has access to your Sanity Studio will still need to login and authorize with their Netlify account to do the former actions mentioned.
+It might not be relevant as of now as personal tokens has been not been implemented but with personal tokens, anyone who has access to your Sanity Studio can do administrative actions on your behalf such as trigger a new build, etc. while with OAuth, anyone who has access to your Sanity Studio will still need to login and authorize with their Netlify account to do the former actions mentioned.
 
 #### How to configure?
 
@@ -94,3 +96,22 @@ netlifyDeployStatusBadge({
 
 MIT © Dorell James
 See LICENSE
+
+## License
+
+[MIT](LICENSE) © Dorell James
+
+## Develop & test
+
+This plugin uses [@sanity/plugin-kit](https://github.com/sanity-io/plugin-kit)
+with default configuration for build & watch scripts.
+
+See [Testing a plugin in Sanity Studio](https://github.com/sanity-io/plugin-kit#testing-a-plugin-in-sanity-studio)
+on how to run this plugin with hotreload in the studio.
+
+### Release new version
+
+Run ["CI & Release" workflow](https://github.com/dorelljames/sanity-plugin-netlify-deploy-status-badge/actions/workflows/main.yml).
+Make sure to select the main branch and check "Release new version".
+
+Semantic release will only release on configured branches, so it is safe to run release on any branch.
